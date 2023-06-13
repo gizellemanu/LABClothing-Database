@@ -1,2 +1,2 @@
 # LAB-Clothing-Collection-BackEnd
-DEVinHouse [Audaces] V2 Módulo 2 - Projeto Avaliativo
+DEVinHouse [Audaces] V2 . Módulo 2 - Projeto Avaliativo
