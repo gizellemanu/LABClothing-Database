@@ -54,8 +54,7 @@ DEVinHouse [Audaces] V2 . Módulo 2 - Projeto Avaliativo
 |  Atualização do Estado da Coleção no sistema: | <em> Serviço para alterar/atualizar o estado da coleção no sistema e que o usuário do sistema poderá alterar este estado sempre que necessário.  |
 |  Listagem de Coleções: | <em>  Serviço de listagem de coleções cadastrados. |
 |  Listagem de Coleção pelo identificador: | <em> Serviço de consulta de coleções pelo seu código identificador. |
-|  Exclusão de Coleção: | <em> Serviço para excluir uma coleção pelo código identificador que só permitirá a exclusão de uma coleção que esteja arquivada (inativa) e que não
-possua modelos vinculados.  |
+|  Exclusão de Coleção: | <em> Serviço para excluir uma coleção pelo código identificador que só permitirá a exclusão de uma coleção que esteja arquivada (inativa) e que não possua modelos vinculados.  |
   
 **Cadastro de Modelos, serviço de cadastro de Modelos, cuja entidade deve possuir os seguintes atributos:**
  <pre>
