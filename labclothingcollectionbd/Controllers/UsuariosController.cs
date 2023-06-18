@@ -1,9 +1,12 @@
 ﻿using labclothingcollection.DTO.UsuariosDTO.Request;
 using labclothingcollection.DTO.UsuariosDTO.Response;
+using labclothingcollectionbd.Context;
 using labclothingcollectionbd.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace labclothingcollectionbd.Controllers
 {
@@ -11,18 +14,11 @@ namespace labclothingcollectionbd.Controllers
     [ApiController]
     public class UsuariosController : ControllerBase
     {
-        private readonly List<Usuarios> _usuarios;
+        private readonly LabClothingCollectionBDContext _context;
 
-        public UsuariosController()
+        public UsuariosController(LabClothingCollectionBDContext context)
         {
-            _usuarios = new List<Usuarios>();
-
-            _usuarios.Add(new Usuarios { IdPessoa = 1, NomeCompleto = "Joao Maria Antunes", Genero = "masculino", DataNascimento = "12-03-1982", CpfCnpj = "00000000000", Telefone = "319999999", Email = "joao@hotmail.com", TipoUsuario = "Gerente", EstadoUsuario = "Ativo" });
-            _usuarios.Add(new Usuarios { IdPessoa = 2, NomeCompleto = "Maria Antonieta Guilermino", Genero = "feminino", DataNascimento = "22-07-1953", CpfCnpj = "11111111111", Telefone = "326666666", Email = "maria@hotmail.com", TipoUsuario = "Administrador", EstadoUsuario = "Ativo" });
-            _usuarios.Add(new Usuarios { IdPessoa = 3, NomeCompleto = "Luan Garibaldi", Genero = "masculino", DataNascimento = "18-08-1988", CpfCnpj = "55555555555", Telefone = "331111111", Email = "luan@hotmail.com", TipoUsuario = "Criador", EstadoUsuario = "Ativo" });
-            _usuarios.Add(new Usuarios { IdPessoa = 4, NomeCompleto = "Helena de Canto e Melo", Genero = "feminino", DataNascimento = "29-09-1990", CpfCnpj = "99999999999", Telefone = "317777777", Email = "helena@hotmail.com", TipoUsuario = "Criador", EstadoUsuario = "Ativo" });
-            _usuarios.Add(new Usuarios { IdPessoa = 5, NomeCompleto = "Ana Paula Jacomo", Genero = "feminino", DataNascimento = "14-10-2000", CpfCnpj = "33333333333", Telefone = "382222222", Email = "anapaula@hotmail.com", TipoUsuario = "criador", EstadoUsuario = "Inativo" });
-
+            _context = context;
         }
 
 
@@ -30,22 +26,11 @@ namespace labclothingcollectionbd.Controllers
         /// <returns> Retorna uma lista de Usuarios cadastrados. </returns>
         /// <response code = "200"> Sucesso no retorno de uma Usuarios cadastrados! </response>
         [HttpGet]
-        public IActionResult GetUsuarios(string status)
+        public ActionResult<List<UsuariosResponseDTO>> GetAll()
         {
-            IEnumerable<Usuarios> usuarios = _usuarios;
-            if (!string.IsNullOrEmpty(status))
-            {
-                usuarios = usuarios.Where(u => u.EstadoUsuario == status);
-            }
+            var usuarios = _context.Usuarios.ToList();
 
-            var usuariosDto = usuarios.Select(u => new UsuariosResponseDTO
-            {
-                Email = u.Email,
-                TipoUsuario = u.TipoUsuario,
-                EstadoUsuario = u.EstadoUsuario
-            }).ToList();
-
-            return Ok(usuariosDto);
+            return Ok(usuarios);
         }
 
 
@@ -55,22 +40,15 @@ namespace labclothingcollectionbd.Controllers
         /// <response code = "200"> Sucesso no retorno de lista de usuarios. </response>
         /// <response code = "404"> Não foi encontrado registro com o Id informado. Id inválido! </response>
         [HttpGet("{id}")]
-        public IActionResult GetUsuarioById(int id)
+        public ActionResult<UsuariosResponseDTO> GetById(int id)
         {
-            var usuario = _usuarios.FirstOrDefault(u => u.IdPessoa == id);
-            if (usuario == null)
+            var colecao = _context.Colecoes.FirstOrDefault(c => c.IdColecaoRelacionada == id);
+            if (colecao == null)
             {
-                return NotFound();
+                return NotFound("Não foi possivel encontrar o Usuário na base de dados!");
             }
 
-            var usuarioDto = new UsuariosResponseDTO
-            {
-                Email = usuario.Email,
-                TipoUsuario = usuario.TipoUsuario,
-                EstadoUsuario = usuario.EstadoUsuario
-            };
-
-            return Ok(usuarioDto);
+            return Ok(colecao);
         }
 
 
@@ -81,36 +59,17 @@ namespace labclothingcollectionbd.Controllers
         /// <response code = "400"> Requisição com dados inválidos. </response>
         /// <response code = "409"> Usuario já cadastrado na lista Usuarios. </response>
         [HttpPost]
-        public IActionResult CreateUsuario(UsuariosRequestDTO usuarioDto)
+        public async Task<ActionResult<UsuariosRequestDTO>> Create([FromBody] Usuarios usuario)
         {
-            // Verificar se o usuário com o mesmo e-mail já existe
-            var existingUsuario = _usuarios.FirstOrDefault(u => u.Email == usuarioDto.Email);
-            if (existingUsuario != null)
+            if (await _context.Usuarios.AnyAsync(c => c.IdPessoa == usuario.IdPessoa))
             {
-                return Conflict("Um usuário com o mesmo endereço de e-mail já está cadastrado.");
+                return Conflict("Este Usuário já está cadastrada na base de dados.");
             }
 
-            // Simular gerar um ID único para o novo usuário
-            int newUserId = _usuarios.Max(u => u.IdPessoa) + 1;
+            _context.Usuarios.Add(usuario);
+            await _context.SaveChangesAsync();
 
-            var usuario = new Usuarios
-            {
-                IdPessoa = newUserId,
-                Email = usuarioDto.Email,
-                TipoUsuario = usuarioDto.TipoUsuario,
-                EstadoUsuario = usuarioDto.EstadoUsuario
-            };
-
-            _usuarios.Add(usuario);
-
-            var usuarioResponseDto = new UsuariosResponseDTO
-            {
-                Email = usuario.Email,
-                TipoUsuario = usuario.TipoUsuario,
-                EstadoUsuario = usuario.EstadoUsuario
-            };
-
-            return CreatedAtAction(nameof(GetUsuarioById), new { id = usuario.IdPessoa }, usuarioResponseDto);
+            return CreatedAtAction(nameof(GetById), new { id = usuario.IdPessoa }, usuario);
         }
 
 
@@ -122,26 +81,30 @@ namespace labclothingcollectionbd.Controllers
         /// <response code = "400"> Requisição com dados inválidos. </response>
         /// <response code = "404"> Não foi encontrado  registro com o Id informado. Id inválido! </response>
         [HttpPut("{id}")]
-        public IActionResult UpdateUsuario(int id, UsuariosRequestDTO usuarioDto)
+        public IActionResult Update(int id, [FromBody] UsuariosRequestDTO usuario)
         {
-            var usuario = _usuarios.FirstOrDefault(u => u.IdPessoa == id);
-            if (usuario == null)
+            var usuarioExistente = _context.Usuarios.FirstOrDefault(c => c.IdPessoa == id);
+            if (usuarioExistente == null)
             {
-                return NotFound();
+                return NotFound("Não foi possivel encontrar o Usuario na base de dados!");
             }
 
-            usuario.Email = usuarioDto.Email;
-            usuario.TipoUsuario = usuarioDto.TipoUsuario;
-            usuario.EstadoUsuario = usuarioDto.EstadoUsuario;
-
-            var usuarioResponseDto = new UsuariosResponseDTO
+            if (!ModelState.IsValid)
             {
-                Email = usuario.Email,
-                TipoUsuario = usuario.TipoUsuario,
-                EstadoUsuario = usuario.EstadoUsuario
-            };
+                return BadRequest("Os dados fornecidos são invalidos!");
+            }
 
-            return Ok(usuarioResponseDto);
+            usuarioExistente.NomeCompleto = usuario.NomeCompleto;
+            usuarioExistente.Genero = usuario.Genero;
+            usuarioExistente.DataNascimento = usuario.DataNascimento;
+            usuarioExistente.CpfCnpj = usuario.CpfCnpj;
+            usuarioExistente.Telefone = usuario.Telefone;
+            usuarioExistente.Email = usuario.Email;
+            usuarioExistente.EstadoUsuario = usuario.EstadoUsuario;
+
+            _context.SaveChanges();
+
+            return Ok(usuarioExistente);
         }
 
         /// <summary>Atualização de estado de Usuarios</summary>
@@ -149,35 +112,45 @@ namespace labclothingcollectionbd.Controllers
         /// <param name="statusDto">Resposta HTTP com o estado atualizado do usuario</param>
         /// <returns></returns>
         [HttpPut("{id}/status")]
-        public IActionResult UpdateStatusUsuario(int id, [FromBody] UsuariosRequestDTO statusDto)
+        public IActionResult UpdateEstadoSistema(int id, string estadoSistema)
         {
-            var usuario = _usuarios.FirstOrDefault(u => u.IdPessoa == id);
-            if (usuario == null)
+            var usuarioExistente = _context.Usuarios.FirstOrDefault(c => c.IdPessoa == id);
+            if (usuarioExistente == null)
             {
-                return NotFound();
+                return NotFound("Não foi possivel encontrar o Usuario na base de dados!");
             }
 
-            usuario.EstadoUsuario = statusDto.EstadoUsuario;
+            if (estadoSistema != "Ativo" && estadoSistema != "Inativo")
+            {
+                return BadRequest("Os dados fornecidos são invalidos!");
+            }
+
+            usuarioExistente.EstadoSistema = estadoSistema;
+
+            _context.SaveChanges();
+
+            return Ok(usuarioExistente);
+        }
+
+
+        /// <summary> Remoção de uma usuario. </summary>
+        /// <param name = "id"> Id de usuario. </param>
+        /// <returns> Remoção de um usuario da lista Usuarios </returns>
+        /// <reponse code = "204"> Usuario removido com sucesso! </reponse>
+        /// <reponse code = "404"> Não foi encontrado  registro com o Id informado. Id inválido! </reponse>
+        [HttpDelete("{id}")]
+        public IActionResult Delete(int id)
+        {
+            var usuario = _context.Usuarios.FirstOrDefault(c => c.IdPessoa == id);
+            if (usuario == null)
+            {
+                return NotFound("Usuario não encontrado na base de dados!");
+            }
+
+            _context.Usuarios.Remove(usuario);
+            _context.SaveChanges();
 
             return NoContent();
         }
-            /// <summary> Remoção de uma usuario. </summary>
-            /// <param name = "id"> Id de usuario. </param>
-            /// <returns> Remoção de um usuario da lista Usuarios </returns>
-            /// <reponse code = "204"> Usuario removido com sucesso! </reponse>
-            /// <reponse code = "404"> Não foi encontrado  registro com o Id informado. Id inválido! </reponse>
-            [HttpDelete("{id}")]
-            public IActionResult DeleteUsuario(int id)
-            {
-                var usuario = _usuarios.FirstOrDefault(u => u.IdPessoa == id);
-                if (usuario == null)
-                {
-                    return NotFound();
-                }
-
-                _usuarios.Remove(usuario);
-
-                return NoContent();
-            }
-        }
-    } 
+    }
+}

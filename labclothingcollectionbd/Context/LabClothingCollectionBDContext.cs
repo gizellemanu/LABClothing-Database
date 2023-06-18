@@ -1,9 +1,6 @@
-﻿using labclothingcollection.Controllers;
-using labclothingcollectionbd.Controllers;
-using labclothingcollectionbd.Models;
+﻿using labclothingcollectionbd.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
+
 
 namespace labclothingcollectionbd.Context
 {
@@ -22,39 +19,31 @@ namespace labclothingcollectionbd.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Usuarios>()
-                .HasIndex(u => u.Email)
+                .HasIndex(u => u.IdPessoa)
                .IsUnique();
 
             modelBuilder.Entity<Pessoas>()
-                .HasIndex(u => u.CpfCnpj)
+                .HasIndex(u => u.IdPessoa)
                 .IsUnique();
 
             modelBuilder.Entity<Colecoes>()
-                .HasIndex(c => c.NomeColecao)
+                .HasIndex(c => c.IdColecaoRelacionada)
                 .IsUnique();
 
             modelBuilder.Entity<Modelos>()
-                .HasIndex(m => m.NomeModelo)
+                .HasIndex(m => m.IdModelo)
                 .IsUnique();
         }
-        public List<UsuariosController> Usuario()
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-          return Set<UsuariosController>().ToList();
-        }
-        public List<PessoasController> Pessoa()
-        {
-          return Set<PessoasController>().ToList();
-       }
-        public List<ColecoesController> Colecao()
-        {
-          return Set<ColecoesController>().ToList();
-        }
-        public List<ModelosController> Modelo()
-        {
-          return Set<ModelosController>().ToList();
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer("ServerConnection");
+            }
         }
     }
 }

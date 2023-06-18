@@ -20,7 +20,7 @@ namespace labclothingcollection.DTO.UsuariosDTO.Request
         [Required(ErrorMessage = "O campo Cpf/CNPJ é de preenchimento obrigatório")]
         [MaxLength(20, ErrorMessage = "O campo Cpf/CNPJ não pode exceder 20 caracteres")]
         [RegularExpression(@"^\d{11}$|^\d{14}$", ErrorMessage = "O campo CPF/CNPJ possui um formato inválido")]
-        public string CPFouCNPJ { get; set; }
+        public string CpfCnpj { get; set; }
 
         [Required(ErrorMessage = "O campo Telefone é de preenchimento obrigatório. O campo Email possui um formato inválido. dev@provedor.com ou dev@provedor.com.br")]
         [MaxLength(15, ErrorMessage = "O campo Telefone não pode exceder 15 caracteres")]

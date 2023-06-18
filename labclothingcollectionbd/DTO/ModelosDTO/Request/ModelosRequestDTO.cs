@@ -11,8 +11,8 @@ namespace labclothingcollection.DTO.ModelosDTO.Request
         [Key]
         public int IdColecaoRelacionada { get; set; }
 
-        [Required(ErrorMessage = "O campo IdModelo é de preenchimento obrigatório")]
-        public int IdModelo { get; set; }
+ //       [Required(ErrorMessage = "O campo IdModelo é de preenchimento obrigatório")]
+ //       public int IdModelo { get; set; }
 
         [Required(ErrorMessage = "O campo Nome do Modelo é de preenchimento obrigatório")]
         [MaxLength(80, ErrorMessage = "O campo Nome do Modelo não pode exceder 80 caracteres")]

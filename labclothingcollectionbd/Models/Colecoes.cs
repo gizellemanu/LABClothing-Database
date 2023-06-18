@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace labclothingcollectionbd.Models
 {
+    [Table("Colecoes")]
     public class Colecoes
     {
 
@@ -20,7 +22,7 @@ namespace labclothingcollectionbd.Models
         public string Marca { get; set; }
 
         [Required(ErrorMessage = "O campo Orçamento é de preenchimento obrigatório")]
-        public decimal Orcamento { get; set; }
+        public int Orcamento { get; set; }
 
         [Required(ErrorMessage = "O campo Ano de Lançameno é de preenchimento obrigatório")]
         [RegularExpression(@"^(19|20)\d{2}$", ErrorMessage = "O campo Ano de Lançamento deve estar entre 1900-2099.")]
@@ -33,7 +35,7 @@ namespace labclothingcollectionbd.Models
 
         [Required(ErrorMessage = "O campo Estato do Sistema é de preenchimento obrigatório")]
         [MaxLength(20, ErrorMessage = "O campo Estato do Sistema não pode exceder 20 caracteres")]
-        [RegularExpression("^(Ativo|Inativo|ativo|inativo)$", ErrorMessage = "O campo Estado no Sistema deve receber somentte as seguintes atribuições: Ativo ou ativo, Inativo ou inativo")]
+        [RegularExpression("^(Ativo|Inativo)$", ErrorMessage = "O campo Estado no Sistema deve receber somentte as seguintes atribuições: Ativo ou Inativo")]
         public string EstadoSistema { get; set; }
     }
 }

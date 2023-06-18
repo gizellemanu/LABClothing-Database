@@ -1,8 +1,10 @@
-﻿using labclothingcollectionbd.Models;
-using Microsoft.AspNetCore.JsonPatch;
+﻿using labclothingcollectionbd.Context;
+using labclothingcollectionbd.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace labclothingcollection.Controllers
 {
@@ -10,17 +12,11 @@ namespace labclothingcollection.Controllers
     [ApiController]
     public class PessoasController : ControllerBase
     {
-        private readonly List<Pessoas> _pessoas;
+        private readonly LabClothingCollectionBDContext _context;
 
-        public PessoasController()
+        public PessoasController(LabClothingCollectionBDContext context)
         {
-            _pessoas = new List<Pessoas>();
-
-            _pessoas.Add(new Pessoas { IdPessoa = 1, NomeCompleto = "Joao Maria Antunes",         Genero = "masculino",DataNascimento = "12/03/1982", CpfCnpj = "00000000000", Telefone = "319999999", });
-            _pessoas.Add(new Pessoas { IdPessoa = 2, NomeCompleto = "Maria Antonieta Guilermino", Genero = "feminino", DataNascimento = "22/07/1953", CpfCnpj = "11111111111", Telefone = "326666666", });
-            _pessoas.Add(new Pessoas { IdPessoa = 3, NomeCompleto = "Luan Garibaldi",             Genero = "masculino",DataNascimento = "18/08/1988", CpfCnpj = "55555555555", Telefone = "331111111", });
-            _pessoas.Add(new Pessoas { IdPessoa = 4, NomeCompleto = "Helena de Canto e Melo",     Genero = "feminino", DataNascimento = "29/09/1990", CpfCnpj = "99999999999", Telefone = "317777777", });
-            _pessoas.Add(new Pessoas { IdPessoa = 5, NomeCompleto = "Ana Paula Jacomo",           Genero = "feminino", DataNascimento = "14/10/2000", CpfCnpj = "33333333333", Telefone = "382222222", });
+            _context = context;
         }
 
 
@@ -28,9 +24,11 @@ namespace labclothingcollection.Controllers
         /// <returns> Retorna uma lista de pessoas cadastradas. </returns>
         /// <response code = "200"> Sucesso no retorno do objeto lista de pessoas cadastradas! </response>
         [HttpGet]
-        public ActionResult<IEnumerable<Pessoas>> Get()
+        public ActionResult<List<Pessoas>> GetAll()
         {
-            return _pessoas;
+            var pessoas = _context.Pessoas.ToList();
+
+            return Ok(pessoas);
         }
 
 
@@ -40,14 +38,15 @@ namespace labclothingcollection.Controllers
         /// <response code = "200"> Sucesso no retorno do objeto pessoas. </response>
         /// <response code = "404"> Não foi encontrado registro com o Id informado. Id inválido! </response>
         [HttpGet("{id}")]
-        public ActionResult<Pessoas> Get(int id)
+        public ActionResult<Pessoas> GetById(int id)
         {
-            var pessoa = _pessoas.Find(c => c.IdPessoa == id);
+            var pessoa = _context.Pessoas.FirstOrDefault(c => c.IdPessoa == id);
             if (pessoa == null)
             {
-                return NotFound();
+                return NotFound("Não foi possivel encontrar a Pessoa na base de dados!");
             }
-            return pessoa;
+
+            return Ok(pessoa);
         }
 
 
@@ -58,22 +57,17 @@ namespace labclothingcollection.Controllers
         /// <response code = "400"> Requisição com dados inválidos. </response>
         /// <response code = "409"> Nome já cadastrado na lista Pessoas. </response>
         [HttpPost]
-        public ActionResult<Colecoes> Post([FromBody] Pessoas pessoa)
+        public async Task<ActionResult<Pessoas>> Create([FromBody] Pessoas pessoa)
         {
-            if (!ModelState.IsValid)
+            if (await _context.Pessoas.AnyAsync(c => c.NomeCompleto == pessoa.NomeCompleto))
             {
-                return BadRequest(ModelState);
+                return Conflict("Esta Pessoa já está cadastrada na base de dados.");
             }
 
-            if (_pessoas.Any(c => c.IdPessoa == pessoa.IdPessoa))
-            {
-                return Conflict("Pessoa já cadastrada na lista Pessoas");
-            }
+            _context.Pessoas.Add(pessoa);
+            await _context.SaveChangesAsync();
 
-            pessoa.IdPessoa = GetNextId();
-            _pessoas.Add(pessoa);
-
-            return CreatedAtAction(nameof(Get), new { id = pessoa.IdPessoa }, pessoa);
+            return CreatedAtAction(nameof(GetById), new { id = pessoa.NomeCompleto }, pessoa);
         }
 
 
@@ -85,27 +79,29 @@ namespace labclothingcollection.Controllers
         /// <response code = "400"> Requisição com dados inválidos. </response>
         /// <response code = "404"> Não foi encontrado  registro com o Id informado. Id inválido! </response>
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Pessoas pessoa)
+        public IActionResult Update(int id, [FromBody] Pessoas pessoa)
         {
-            if (id != pessoa.IdPessoa)
+            var pessoaExistente = _context.Pessoas.FirstOrDefault(c => c.IdPessoa == id);
+            if (pessoaExistente == null)
             {
-                return BadRequest();
+                return NotFound("Não foi possivel encontrar a Pessoa na base de dados!");
             }
 
-            var existingPessoa = _pessoas.Find(c => c.IdPessoa == id);
-            if (existingPessoa == null)
+            if (!ModelState.IsValid)
             {
-                return NotFound();
+                return BadRequest("Os dados fornecidos são invalidos!");
             }
 
-            existingPessoa.NomeCompleto = pessoa.NomeCompleto;
-            existingPessoa.Genero = pessoa.Genero;
-            existingPessoa.DataNascimento = pessoa.DataNascimento;
-            existingPessoa.CpfCnpj = pessoa.CpfCnpj;
-            existingPessoa.Telefone = pessoa.Telefone;
+            pessoaExistente.NomeCompleto = pessoa.NomeCompleto;
+            pessoaExistente.Genero = pessoa.Genero;
+            pessoaExistente.DataNascimento = pessoa.DataNascimento;
+            pessoaExistente.CpfCnpj = pessoa.CpfCnpj;
+            pessoaExistente.Telefone = pessoa.Telefone;
+;
 
+            _context.SaveChanges();
 
-            return Ok(existingPessoa); ;
+            return Ok(pessoaExistente);
         }
 
 
@@ -113,24 +109,24 @@ namespace labclothingcollection.Controllers
         /// <param name="id"></param>
         /// <param name="patchDoc"></param>
         /// <returns></returns>
-        [HttpPatch("{id}")]
-        public IActionResult Patch(int id, [FromBody] JsonPatchDocument<Pessoas> patchDoc)
-        {
-            var pessoa = _pessoas.Find(c => c.IdPessoa == id);
-            if (pessoa == null)
-            {
-                return NotFound();
-            }
+ //       [HttpPatch("{id}")]
+ //       public IActionResult Patch(int id, [FromBody] JsonPatchDocument<Pessoas> patchDoc)
+ //       {
+ //         var pessoa = _pessoas.Find(c => c.IdPessoa == id);
+ //           if (pessoa == null)
+ //           {
+ //               return NotFound();
+ //           }
 
-            patchDoc.ApplyTo(pessoa, ModelState);
+ //           patchDoc.ApplyTo(pessoa, ModelState);
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+ //           if (!ModelState.IsValid)
+ //           {
+ //               return BadRequest(ModelState);
+ //           }
 
-            return NoContent();
-        }
+ //           return NoContent();
+ //       }
 
 
         /// <summary> Remoção de uma pessoa. </summary>
@@ -141,24 +137,16 @@ namespace labclothingcollection.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var colecao = _pessoas.Find(c => c.IdPessoa == id);
-            if (colecao == null)
+            var pessoa = _context.Pessoas.FirstOrDefault(c => c.IdPessoa == id);
+            if (pessoa == null)
             {
-                return NotFound();
+                return NotFound("Pessoa não encontrada na base de dados!");
             }
 
-            _pessoas.Remove(colecao);
+            _context.Pessoas.Remove(pessoa);
+            _context.SaveChanges();
 
             return NoContent();
-        }
-
-        private int GetNextId()
-        {
-            if (_pessoas.Count > 0)
-            {
-                return _pessoas[_pessoas.Count - 1].IdPessoa + 1;
-            }
-            return 1;
         }
     }
 }

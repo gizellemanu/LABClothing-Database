@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace labclothingcollectionbd.Models
 {
-        public class Usuarios : Pessoas
+    [Table("Usuarios")]
+    public class Usuarios : Pessoas
         {
             [Required(ErrorMessage = "O campo Email é de preenchimento obrigatório")]
             [MaxLength(50, ErrorMessage = "O campo Email não pode exceder 50 caracteres")]
