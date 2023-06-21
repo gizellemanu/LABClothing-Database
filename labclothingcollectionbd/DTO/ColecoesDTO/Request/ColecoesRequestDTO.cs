@@ -1,21 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace labclothingcollectionbd.Models
+
+namespace labclothingcollection.DTO.ColecoesDTO.Request
 {
-    [Table("Colecoes")]
-    public class Colecoes
+    public class ColecoesRequestDTO
     {
-
-        [Key]
-        public int IdColecaoRelacionada { get; set; }
-
         [Required(ErrorMessage = "O campo Nome da Coleção é de preenchimento obrigatório")]
         [MaxLength(200, ErrorMessage = "O campo Nome não pode exceder 200 caracteres")]
         public string NomeColecao { get; set; }
 
         [Required(ErrorMessage = "O campo Id Responsavel é de preenchimento obrigatório")]
-        [RegularExpression(@"^\d{1,6}$", ErrorMessage = "O campo Id Responsavel deve conter até 6 dígitos.")]
+        [RegularExpression(@"^\d{1,6}$", ErrorMessage = "O campo Id Responsavel deve conter 6 dígitos.")]
         public int IdResponsavel { get; set; }
 
         [Required(ErrorMessage = "O campo Marca é de preenchimento obrigatório")]

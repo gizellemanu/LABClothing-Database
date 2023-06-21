@@ -30,6 +30,11 @@ namespace labclothingcollectionbd.Controllers
         {
             var modelos = _context.Modelos.ToList();
 
+            if (modelos.Count == 0)
+            {
+                return NotFound("Nenhum modelo encontrado no banco de dados.");
+            }
+
             return Ok(modelos);
         }
 
@@ -59,17 +64,44 @@ namespace labclothingcollectionbd.Controllers
         /// <response code = "400">Requisição com dados invalidos para o objeto Modelos. </response>
         /// <response code = "409">Modelo já cadastrado no objeto Modelos. </response>        
         [HttpPost]
-        public async Task<ActionResult<ModelosRequestDTO>> Create([FromBody] Modelos modelo)
+        public async Task<ActionResult<ModelosRequestDTO>> Create([FromBody] ModelosRequestDTO modelo)
         {
             if (await _context.Modelos.AnyAsync(c => c.NomeModelo == modelo.NomeModelo))
             {
                 return Conflict("Este Modelo já está cadastrado na base de dados.");
             }
 
-            _context.Modelos.Add(modelo);
-            await _context.SaveChangesAsync();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return CreatedAtAction(nameof(GetById), new { id = modelo.IdModelo }, modelo);
+            var colecaoRelacionada = await _context.Colecoes.FindAsync(modelo.IdColecaoRelacionada);
+            if (colecaoRelacionada == null)
+            {
+                return BadRequest("O Id Colecao Relacionada informado não existe.");
+            }
+
+            var novoModelo = new Modelos
+            {
+                NomeModelo = modelo.NomeModelo,
+                Tipo = modelo.Tipo,
+                Layout = modelo.Layout,
+                IdColecaoRelacionada = modelo.IdColecaoRelacionada
+            };
+
+            _context.Modelos.Add(novoModelo);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                return Conflict("Não foi possível salvar o Modelo na base de dados devido a um conflito nos dados informados.");
+            }
+
+            return CreatedAtAction(nameof(GetById), new { id = novoModelo.IdModelo }, novoModelo);
         }
 
 
@@ -128,7 +160,7 @@ namespace labclothingcollectionbd.Controllers
             _context.Modelos.Remove(modelo);
             _context.SaveChanges();
 
-            return NoContent();
+            return Ok("Modelo removido com sucesso da base de dados!");
         }
     }
 }

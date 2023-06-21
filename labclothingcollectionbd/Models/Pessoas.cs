@@ -18,7 +18,7 @@ namespace labclothingcollectionbd.Models
         public string Genero { get; set; }
 
         [Required(ErrorMessage = "O campo Data Nascimento é de preenchimento obrigatório")]
-        [RegularExpression(@"^(0[1-9]|1\d|2\d|3[01])-(0[1-9]|1[0-2])-\d{4}$", ErrorMessage = "O campo Data Nascimento possui um formato dd/mm/yyyyy!")]
+        [RegularExpression(@"^(0[1-9]|1\d|2\d|3[01])-(0[1-9]|1[0-2])-\d{4}$", ErrorMessage = "O campo Data Nascimento possui um formato dd-mm-yyyyy!")]
         public string DataNascimento { get; set; }
 
         [Required(ErrorMessage = "O campo Cpf/CNPJ é de preenchimento obrigatório")]

@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="DTO\PessoasDTO\**" />
+    <Content Remove="DTO\PessoasDTO\**" />
+    <EmbeddedResource Remove="DTO\PessoasDTO\**" />
+    <None Remove="DTO\PessoasDTO\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="ApiVersionDescription.cs" />
     <Compile Remove="IApiVersionDescriptionProvider.cs" />
   </ItemGroup>

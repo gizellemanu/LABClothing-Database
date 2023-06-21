@@ -26,9 +26,20 @@ namespace labclothingcollectionbd.Controllers
         /// <returns> Retorna uma lista de Usuarios cadastrados. </returns>
         /// <response code = "200"> Sucesso no retorno de uma Usuarios cadastrados! </response>
         [HttpGet]
-        public ActionResult<List<UsuariosResponseDTO>> GetAll()
+        public ActionResult<List<Usuarios>> GetAll(string estadoUsuario)
         {
             var usuarios = _context.Usuarios.ToList();
+
+            if (!string.IsNullOrEmpty(estadoUsuario))
+            {
+                bool isAtivo = estadoUsuario.ToLower() == "ativo";
+                usuarios = usuarios.Where(u => u.EstadoUsuario.ToLower() == estadoUsuario.ToLower()).ToList();
+            }
+
+            if (usuarios.Count == 0)
+            {
+                return NotFound("Nenhum usuário encontrado para o estado especificado.");
+            }
 
             return Ok(usuarios);
         }
@@ -40,15 +51,15 @@ namespace labclothingcollectionbd.Controllers
         /// <response code = "200"> Sucesso no retorno de lista de usuarios. </response>
         /// <response code = "404"> Não foi encontrado registro com o Id informado. Id inválido! </response>
         [HttpGet("{id}")]
-        public ActionResult<UsuariosResponseDTO> GetById(int id)
+        public ActionResult<Usuarios> GetById(int id)
         {
-            var colecao = _context.Colecoes.FirstOrDefault(c => c.IdColecaoRelacionada == id);
-            if (colecao == null)
+            var usuario = _context.Usuarios.FirstOrDefault(c => c.IdPessoa == id);
+            if (usuario == null)
             {
                 return NotFound("Não foi possivel encontrar o Usuário na base de dados!");
             }
 
-            return Ok(colecao);
+            return Ok(usuario);
         }
 
 
@@ -59,17 +70,47 @@ namespace labclothingcollectionbd.Controllers
         /// <response code = "400"> Requisição com dados inválidos. </response>
         /// <response code = "409"> Usuario já cadastrado na lista Usuarios. </response>
         [HttpPost]
-        public async Task<ActionResult<UsuariosRequestDTO>> Create([FromBody] Usuarios usuario)
+        public async Task<ActionResult<UsuariosRequestDTO>> Create([FromBody] UsuariosRequestDTO usuario)
         {
-            if (await _context.Usuarios.AnyAsync(c => c.IdPessoa == usuario.IdPessoa))
+            if (!ModelState.IsValid)
             {
-                return Conflict("Este Usuário já está cadastrada na base de dados.");
+                return BadRequest(new { ErrorMessage = "Requisição inválida. Verifique os dados enviados." });
             }
 
-            _context.Usuarios.Add(usuario);
+            if (await _context.Usuarios.AnyAsync(c => c.CpfCnpj.Trim() == usuario.CpfCnpj.Trim()))
+            {
+                return Conflict(new { ErrorMessage = "Já existe um usuário cadastrado com este CPF/CNPJ na base de dados." });
+            } 
+
+            var novoUsuario = new Usuarios
+            {
+                NomeCompleto = usuario.NomeCompleto,
+                Genero = usuario.Genero,
+                DataNascimento = usuario.DataNascimento,
+                CpfCnpj = usuario.CpfCnpj,
+                Telefone = usuario.Telefone,
+                Email = usuario.Email,
+                TipoUsuario = usuario.TipoUsuario,
+                EstadoUsuario = usuario.EstadoUsuario
+            };
+
+            _context.Usuarios.Add(novoUsuario);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetById), new { id = usuario.IdPessoa }, usuario);
+            var responseUsuario = new UsuariosResponseDTO
+            {
+                NomeCompleto = novoUsuario.NomeCompleto,
+                Genero = novoUsuario.Genero,
+                DataNascimento = novoUsuario.DataNascimento,
+                CpfCnpj = novoUsuario.CpfCnpj,
+                Telefone = novoUsuario.Telefone,
+                Email = novoUsuario.Email,
+                TipoUsuario = novoUsuario.TipoUsuario,
+                EstadoUsuario = novoUsuario.EstadoUsuario
+
+            };
+
+            return CreatedAtAction("GetById", new { id = responseUsuario.IdPessoa }, new { identificador = responseUsuario.IdPessoa, tipo = responseUsuario.TipoUsuario, responseUsuario });
         }
 
 
@@ -86,12 +127,12 @@ namespace labclothingcollectionbd.Controllers
             var usuarioExistente = _context.Usuarios.FirstOrDefault(c => c.IdPessoa == id);
             if (usuarioExistente == null)
             {
-                return NotFound("Não foi possivel encontrar o Usuario na base de dados!");
+                return NotFound("Não foi possível encontrar o Usuario na base de dados!");
             }
 
             if (!ModelState.IsValid)
             {
-                return BadRequest("Os dados fornecidos são invalidos!");
+                return BadRequest("Os dados fornecidos são inválidos!");
             }
 
             usuarioExistente.NomeCompleto = usuario.NomeCompleto;
@@ -100,6 +141,7 @@ namespace labclothingcollectionbd.Controllers
             usuarioExistente.CpfCnpj = usuario.CpfCnpj;
             usuarioExistente.Telefone = usuario.Telefone;
             usuarioExistente.Email = usuario.Email;
+            usuarioExistente.TipoUsuario = usuario.TipoUsuario;
             usuarioExistente.EstadoUsuario = usuario.EstadoUsuario;
 
             _context.SaveChanges();
@@ -112,20 +154,25 @@ namespace labclothingcollectionbd.Controllers
         /// <param name="statusDto">Resposta HTTP com o estado atualizado do usuario</param>
         /// <returns></returns>
         [HttpPut("{id}/status")]
-        public IActionResult UpdateEstadoSistema(int id, string estadoSistema)
+        public IActionResult UpdateEstadoUsuario(int id, [FromBody] EstadoUsuarioRequestDTO estadoUsuarioDTO)
         {
             var usuarioExistente = _context.Usuarios.FirstOrDefault(c => c.IdPessoa == id);
             if (usuarioExistente == null)
             {
-                return NotFound("Não foi possivel encontrar o Usuario na base de dados!");
+                return NotFound("Não foi possível encontrar o Usuário na base de dados!");
             }
 
-            if (estadoSistema != "Ativo" && estadoSistema != "Inativo")
+            if (estadoUsuarioDTO.EstadoUsuario != "Ativo" && estadoUsuarioDTO.EstadoUsuario != "Inativo")
             {
-                return BadRequest("Os dados fornecidos são invalidos!");
+                return BadRequest("Os dados fornecidos são inválidos!");
             }
 
-            usuarioExistente.EstadoSistema = estadoSistema;
+            if (estadoUsuarioDTO.EstadoUsuario == usuarioExistente.EstadoUsuario)
+            {
+                return Conflict("O Usuario informado já se encontra neste estado!");
+            }
+
+            usuarioExistente.EstadoUsuario = estadoUsuarioDTO.EstadoUsuario;
 
             _context.SaveChanges();
 
@@ -147,10 +194,10 @@ namespace labclothingcollectionbd.Controllers
                 return NotFound("Usuario não encontrado na base de dados!");
             }
 
-            _context.Usuarios.Remove(usuario);
+            _context.Pessoas.Remove(usuario);
             _context.SaveChanges();
 
-            return NoContent();
+            return Ok("Usuario removido com sucesso da base de dados!");
         }
     }
 }

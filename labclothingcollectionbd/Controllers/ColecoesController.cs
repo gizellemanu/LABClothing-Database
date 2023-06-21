@@ -1,4 +1,6 @@
-﻿using labclothingcollectionbd.Context;
+﻿using labclothingcollection.DTO.ColecoesDTO.Request;
+using labclothingcollection.DTO.ColecoesDTO.Response;
+using labclothingcollectionbd.Context;
 using labclothingcollectionbd.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,9 +27,14 @@ namespace labclothingcollectionbd.Controllers
         /// <returns>Resposta HTTP com a lista de coleções</returns>
         /// <response code = "200"> Sucesso no retorno do objeto coleções cadastradas! </response>
         [HttpGet]
-        public ActionResult<List<Colecoes>> GetAll()
+        public ActionResult<List<ColecoesResponseDTO>> GetAll()
         {
             var colecoes = _context.Colecoes.ToList();
+
+            if (colecoes.Count == 0)
+            {
+                return NotFound("Não existem dados no banco de dados.");
+            }
 
             return Ok(colecoes);
         }
@@ -36,15 +43,15 @@ namespace labclothingcollectionbd.Controllers
         /// <summary>Consultar coleção por Id.</summary>
         /// <param name="id">Id da coleção.</param>
         /// <returns>Resposta HTTP com os dados da coleção</returns>
-        /// <response code="200"> Sucesso no retorno da coleção no objeto coleções!</response>
+        /// <response code="200"> Sucesso no retorno da coleção na Lista coleções!</response>
         /// <response code="404"> Não foi encontrado registro com o Id informado. Id inválido! </response>
         [HttpGet("{id}")]
-        public ActionResult<Colecoes> GetById(int id)
+        public ActionResult<ColecoesResponseDTO> GetById(int id)
         {
             var colecao = _context.Colecoes.FirstOrDefault(c => c.IdColecaoRelacionada == id);
             if (colecao == null)
             {
-                return NotFound("Não foi possivel encontrar a Coleção na base de dados!");
+                return NotFound("Não foi possível encontrar a Coleção indicada na base de dados!");
             }
 
             return Ok(colecao);
@@ -57,18 +64,47 @@ namespace labclothingcollectionbd.Controllers
         /// <response code = "201"> Sucesso no post do objeto Coleções. </response>
         /// <response code = "400"> Requisição com dados invalidos para o objeto Coleções! </response>
         /// <response code = "409"> Coleção já cadastrada no objeto Coleções. </response>
+
         [HttpPost]
-        public async Task<ActionResult<Colecoes>> Create([FromBody] Colecoes colecao)
+        public async Task<ActionResult<ColecoesRequestDTO>> Create([FromBody] ColecoesRequestDTO colecao)
         {
-            if (await _context.Colecoes.AnyAsync(c => c.NomeColecao == colecao.NomeColecao))
+            if (!ModelState.IsValid)
             {
-                return Conflict("Esta Coleção já está cadastrada na base de dados.");
+                return BadRequest(new { ErrorMessage = "Requisição inválida. Verifique os dados enviados." });
             }
 
-            _context.Colecoes.Add(colecao);
+            if (await _context.Colecoes.AnyAsync(c => c.NomeColecao == colecao.NomeColecao))
+            {
+                return Conflict("Esta coleção já está cadastrada na base de dados.");
+            }
+
+            var novaColecao = new Colecoes
+            {
+                NomeColecao = colecao.NomeColecao,
+                IdResponsavel = colecao.IdResponsavel,
+                Marca = colecao.Marca,
+                Orcamento = colecao.Orcamento,
+                AnoLancamento = colecao.AnoLancamento,
+                Estacao = colecao.Estacao,
+                EstadoSistema = colecao.EstadoSistema
+            };
+
+            _context.Colecoes.Add(novaColecao);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetById), new { id = colecao.IdColecaoRelacionada }, colecao);
+            var responseDTO = new ColecoesResponseDTO
+            {
+                IdColecaoRelacionada = novaColecao.IdColecaoRelacionada,
+                NomeColecao = novaColecao.NomeColecao,
+                IdResponsavel = novaColecao.IdResponsavel,
+                Marca = novaColecao.Marca,
+                Orcamento = novaColecao.Orcamento,
+                AnoLancamento = novaColecao.AnoLancamento,
+                Estacao = novaColecao.Estacao,
+                EstadoSistema = novaColecao.EstadoSistema
+            };
+
+            return CreatedAtAction(nameof(GetById), new { id = responseDTO.IdColecaoRelacionada }, responseDTO);
         }
 
 
@@ -80,19 +116,23 @@ namespace labclothingcollectionbd.Controllers
         /// <response code = "400"> Requisição com dados inválidos! </response>
         /// <response code = "404"> Não foi encontrado  registro com o Id informado. Id inválido! </response>
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] Colecoes colecao)
+        public IActionResult Update(int id, [FromBody] ColecoesRequestDTO colecao)
         {
             var colecaoExistente = _context.Colecoes.FirstOrDefault(c => c.IdColecaoRelacionada == id);
             if (colecaoExistente == null)
             {
-                return NotFound("Não foi possivel encontrar a Coleção na base de dados!");
+                return NotFound("Não foi possível encontrar a Coleção na base de dados!");
+            }
+
+            if (colecaoExistente.NomeColecao != colecao.NomeColecao && _context.Colecoes.Any(c => c.NomeColecao == colecao.NomeColecao))
+            {
+                return Conflict("O nome da Coleção informado já está cadastrado na base de dados.");
             }
 
             if (!ModelState.IsValid)
             {
-                return BadRequest("Os dados fornecidos são invalidos!");
+                return BadRequest("Os dados fornecidos são inválidos!");
             }
-
             colecaoExistente.NomeColecao = colecao.NomeColecao;
             colecaoExistente.IdResponsavel = colecao.IdResponsavel;
             colecaoExistente.Marca = colecao.Marca;
@@ -112,20 +152,25 @@ namespace labclothingcollectionbd.Controllers
         /// <param name="status">Novo estado da coleção</param>
         /// <returns>Resposta HTTP com o estado atualizado da coleção</returns>
         [HttpPut("{id}/status")]
-        public IActionResult UpdateEstadoSistema(int id, string estadoSistema)
+        public IActionResult UpdateEstadoSistema(int id, [FromBody] EstadoSistemaColecaoRequestDTO estadoSistemaColecaoRequestDTO)
         {
             var colecaoExistente = _context.Colecoes.FirstOrDefault(c => c.IdColecaoRelacionada == id);
             if (colecaoExistente == null)
             {
-                return NotFound("Não foi possivel encontrar a Coleção na base de dados!");
+                return NotFound("Não foi possível encontrar a Colecao na base de dados!");
             }
 
-            if (estadoSistema != "Ativo" && estadoSistema != "Inativo")
+            if (estadoSistemaColecaoRequestDTO.EstadoSistema != "Ativo" && estadoSistemaColecaoRequestDTO.EstadoSistema != "Inativo")
             {
-                return BadRequest("Os dados fornecidos são invalidos!");
+                return BadRequest("Os dados fornecidos são inválidos!");
             }
 
-            colecaoExistente.EstadoSistema = estadoSistema;
+            if (estadoSistemaColecaoRequestDTO.EstadoSistema == colecaoExistente.EstadoSistema)
+            {
+                return Conflict("A Coleção informada já se encontra neste estado!");
+            }
+
+            colecaoExistente.EstadoSistema = estadoSistemaColecaoRequestDTO.EstadoSistema;
 
             _context.SaveChanges();
 
@@ -144,13 +189,13 @@ namespace labclothingcollectionbd.Controllers
             var colecao = _context.Colecoes.FirstOrDefault(c => c.IdColecaoRelacionada == id);
             if (colecao == null)
             {
-                return NotFound("Coleção não encontrada na base de dados!");
+                return NotFound("Coleção não encontrado na base de dados!");
             }
 
             _context.Colecoes.Remove(colecao);
             _context.SaveChanges();
 
-            return NoContent();
+            return Ok("Coleção removido com sucesso da base de dados!");
         }
     }
 }
