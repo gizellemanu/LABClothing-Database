@@ -38,7 +38,7 @@ namespace labclothingcollectionbd.Controllers
 
             if (usuarios.Count == 0)
             {
-                return NotFound("Nenhum usuário encontrado para o estado especificado.");
+                return NotFound("Nenhum Usuário encontrado para o estado especificado na base de dados.");
             }
 
             return Ok(usuarios);
@@ -51,13 +51,12 @@ namespace labclothingcollectionbd.Controllers
         /// <response code = "200"> Sucesso no retorno de lista de usuarios. </response>
         /// <response code = "404"> Não foi encontrado registro com o Id informado. Id inválido! </response>
         [HttpGet("{id}")]
-        public ActionResult<Usuarios> GetById(int id)
+        public async Task<IActionResult> GetUsuario(int id)
         {
-            var usuario = _context.Usuarios.FirstOrDefault(c => c.IdPessoa == id);
+            var usuario = await _context.Usuarios.FindAsync(id);
+
             if (usuario == null)
-            {
-                return NotFound("Não foi possivel encontrar o Usuário na base de dados!");
-            }
+                return NotFound("Usuário não encontrado na base de dados.");
 
             return Ok(usuario);
         }
@@ -70,47 +69,30 @@ namespace labclothingcollectionbd.Controllers
         /// <response code = "400"> Requisição com dados inválidos. </response>
         /// <response code = "409"> Usuario já cadastrado na lista Usuarios. </response>
         [HttpPost]
-        public async Task<ActionResult<UsuariosRequestDTO>> Create([FromBody] UsuariosRequestDTO usuario)
+        public async Task<IActionResult> CreateUsuario(UsuariosRequestDTO requestDTO)
         {
             if (!ModelState.IsValid)
-            {
-                return BadRequest(new { ErrorMessage = "Requisição inválida. Verifique os dados enviados." });
-            }
+                return BadRequest(ModelState);
 
-            if (await _context.Usuarios.AnyAsync(c => c.CpfCnpj.Trim() == usuario.CpfCnpj.Trim()))
-            {
-                return Conflict(new { ErrorMessage = "Já existe um usuário cadastrado com este CPF/CNPJ na base de dados." });
-            } 
+            if (await _context.Usuarios.AnyAsync(u => u.CpfCnpj == requestDTO.CpfCnpj))
+                return Conflict("Ja existe um Usuario na base de dados com o CPF (ou CNPJ) informado.");
 
-            var novoUsuario = new Usuarios
+            var usuario = new Usuarios
             {
-                NomeCompleto = usuario.NomeCompleto,
-                Genero = usuario.Genero,
-                DataNascimento = usuario.DataNascimento,
-                CpfCnpj = usuario.CpfCnpj,
-                Telefone = usuario.Telefone,
-                Email = usuario.Email,
-                TipoUsuario = usuario.TipoUsuario,
-                EstadoUsuario = usuario.EstadoUsuario
+                NomeCompleto = requestDTO.NomeCompleto,
+                Genero = requestDTO.Genero,
+                DataNascimento = requestDTO.DataNascimento,
+                CpfCnpj = requestDTO.CpfCnpj,
+                Telefone = requestDTO.Telefone,
+                Email = requestDTO.Email,
+                TipoUsuario = requestDTO.TipoUsuario,
+                EstadoUsuario = requestDTO.EstadoUsuario
             };
 
-            _context.Usuarios.Add(novoUsuario);
+            _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
 
-            var responseUsuario = new UsuariosResponseDTO
-            {
-                NomeCompleto = novoUsuario.NomeCompleto,
-                Genero = novoUsuario.Genero,
-                DataNascimento = novoUsuario.DataNascimento,
-                CpfCnpj = novoUsuario.CpfCnpj,
-                Telefone = novoUsuario.Telefone,
-                Email = novoUsuario.Email,
-                TipoUsuario = novoUsuario.TipoUsuario,
-                EstadoUsuario = novoUsuario.EstadoUsuario
-
-            };
-
-            return CreatedAtAction("GetById", new { id = responseUsuario.IdPessoa }, new { identificador = responseUsuario.IdPessoa, tipo = responseUsuario.TipoUsuario, responseUsuario });
+            return CreatedAtAction(nameof(GetUsuario), new { id = usuario.IdPessoa }, usuario);
         }
 
 

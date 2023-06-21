@@ -27,13 +27,19 @@ namespace labclothingcollectionbd.Controllers
         /// <returns>Resposta HTTP com a lista de coleções</returns>
         /// <response code = "200"> Sucesso no retorno do objeto coleções cadastradas! </response>
         [HttpGet]
-        public ActionResult<List<ColecoesResponseDTO>> GetAll()
+        public ActionResult<List<Colecoes>> GetAll(string estadoSistema)
         {
             var colecoes = _context.Colecoes.ToList();
 
+            if (!string.IsNullOrEmpty(estadoSistema))
+            {
+                bool isAtivo = estadoSistema.ToLower() == "ativo";
+                colecoes = colecoes.Where(u => u.EstadoSistema.ToLower() == estadoSistema.ToLower()).ToList();
+            }
+
             if (colecoes.Count == 0)
             {
-                return NotFound("Não existem dados no banco de dados.");
+                return NotFound("Nenhuma Coleção encontrado para o estado especificado.");
             }
 
             return Ok(colecoes);
@@ -51,7 +57,7 @@ namespace labclothingcollectionbd.Controllers
             var colecao = _context.Colecoes.FirstOrDefault(c => c.IdColecaoRelacionada == id);
             if (colecao == null)
             {
-                return NotFound("Não foi possível encontrar a Coleção indicada na base de dados!");
+                return NotFound("Não foi possível encontrar a Coleção na base de dados!");
             }
 
             return Ok(colecao);
@@ -195,7 +201,7 @@ namespace labclothingcollectionbd.Controllers
             _context.Colecoes.Remove(colecao);
             _context.SaveChanges();
 
-            return Ok("Coleção removido com sucesso da base de dados!");
+            return Ok("Coleção removida com sucesso da base de dados!");
         }
     }
 }

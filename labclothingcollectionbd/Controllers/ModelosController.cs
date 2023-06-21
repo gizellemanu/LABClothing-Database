@@ -32,7 +32,7 @@ namespace labclothingcollectionbd.Controllers
 
             if (modelos.Count == 0)
             {
-                return NotFound("Nenhum modelo encontrado no banco de dados.");
+                return NotFound("Nenhum Modelo encontrado no banco de dados.");
             }
 
             return Ok(modelos);
