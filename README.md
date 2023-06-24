@@ -1,5 +1,6 @@
 # LAB-Clothing-Collection-BackEnd
-DEVinHouse [Audaces] V2 . Módulo 2 - Projeto Avaliativo
+<p align="right">DEVinHouse [Audaces] V2 . Módulo 2 - Projeto Avaliativo</p>
+<p align="right"> Gizelle Emanuel da Silva</p>
 
 ## INTRODUÇÃO
 <p style="text-align: justify;"><em> A LABFashion LTDA, empresa líder no segmento tecnológico para gestão de moda, está com um projeto novo intitulado LAB Clothing Collection, um software audacioso para gestão de coleções de moda no setor de vestuário.</em></p>
@@ -8,7 +9,7 @@ DEVinHouse [Audaces] V2 . Módulo 2 - Projeto Avaliativo
 
 
 ## ROTEIRO DA APLICAÇÃO
-### FORMATO DO SISTEMA
+### FORMATO DO SISTEMA 
 <p style="text-align: justify;"><em> O sistema deve conter os tipos de cadastros abaixo, cada um com suas características. </em></p> </br>
 
 **O cadastros de Usuário, deve ser derivado da classe Pessoa, que possui os seguintes atributos:**
@@ -29,7 +30,7 @@ DEVinHouse [Audaces] V2 . Módulo 2 - Projeto Avaliativo
 |  Listagem de Usuários pelo identificador: | <em> Serviço de consulta de usuário pelo seu código identificador. |
 </br>
   
-**Cadastro de Coleções, Serviço de cadastro de Coleção, cuja entidade deve possuir os seguintes atributos:**
+**Cadastro de Coleções, Serviço de cadastro de Coleção, cuja entidade deve possuir os seguintes atributos:** 
  <pre>
 ● Identificador: Um número que deve ser incrementado automaticamente.
 ● Nome da Coleção: Obrigatório, deve ser texto.
@@ -56,7 +57,7 @@ DEVinHouse [Audaces] V2 . Módulo 2 - Projeto Avaliativo
 |  Listagem de Coleção pelo identificador: | <em> Serviço de consulta de coleções pelo seu código identificador. |
 |  Exclusão de Coleção: | <em> Serviço para excluir uma coleção pelo código identificador que só permitirá a exclusão de uma coleção que esteja arquivada (inativa) e que não possua modelos vinculados.  |
   
-**Cadastro de Modelos, serviço de cadastro de Modelos, cuja entidade deve possuir os seguintes atributos:**
+**Cadastro de Modelos, serviço de cadastro de Modelos, cuja entidade deve possuir os seguintes atributos:** 
  <pre>
 ● Identificador: Um número que deve ser incrementado automaticamente.
 ● Nome do modelo: Obrigatório, deve ser texto.
@@ -84,14 +85,37 @@ DEVinHouse [Audaces] V2 . Módulo 2 - Projeto Avaliativo
 |  Listagem de Modelos: | <em> Serviço de listagem de modelos cadastrados.  |
 |  Listagem de Modelo pelo identificador: | <em>  Serviço de consulta de modelos pelo seu código identificador. |
 |  Exclusão de Modelo: | <em> Serviço para excluir um modelo pelo código identificador. |
-   
-  
-
 > 
 > 
-> 
-> 
-
 
 ### Modelagem
 <img aling="center" src="./modelagem.jpg" /> 
+
+
+
+
+## Orientações 
+### Execução da API rest
+<p align="justify">Para começar, certifique-se de ter instalado o SQL Server Express em sua máquina. Em seguida, realize a instalação do Visual Studio 2019 ou uma versão mais recente. Essa etapa é essencial para prosseguir com o processo.</p>
+
+<p align="justify">Após a instalação do Visual Studio, crie um banco de dados com o nome "labclothingcollectionbd". Esse banco de dados será utilizado no projeto que você irá configurar.</p>
+
+<p align="justify">Agora, é necessário clonar o repositório correspondente do GitHub, que contém os arquivos necessários para o projeto. Certifique-se de obter o repositório correto.</p>
+
+<p align="justify">Em seguida, abra o Visual Studio. Na tela de boas-vindas, clique em "Open a project or solution" (Abrir um projeto ou solução). Navegue até a pasta onde o projeto foi clonado e abra o arquivo de solução (.sln).</p>
+
+<p align="justify">Verifique se o arquivo "appsettings.json" contém a string de conexão correta (labclothingcollectionbd). É importante garantir que a configuração esteja correta para estabelecer a conexão com o banco de dados.</p>
+
+<p align="justify">Por fim, no Visual Studio, pressione F5 ou vá para "Debug" > "Start Debugging" (Depurar > Iniciar Depuração) para iniciar o projeto. Isso irá compilar e executar o projeto, permitindo que você comece a trabalhar nele. Lembre-se de que é necessário ter o Visual Studio 2019 ou uma versão mais recente para seguir essas etapas com sucesso.</p>
+
+### Recursos Visuais
+<p align="justify"><em> Gostaria de informar que temos recursos adicionais para auxiliá-lo no processo. Primeiramente, um vídeo explicativo sobre a modelagem da API rest está disponível no Google Drive. Ele fornece informações detalhadas sobre a estrutura e o funcionamento do modelo da API rest e banco de daos SQL Server. Além disso, temos um vídeo que mostra os endpoints utilizados no projeto. Esse vídeo é útil para compreender e explorar as funcionalidades disponíveis na aplicação.</em></p>
+
+<p align="justify"><em> Para facilitar o gerenciamento e a organização do projeto, foi adotada a técnica do Kanban no quadro Trello. Essa metodologia ágil permite visualizar e acompanhar o progresso das tarefas, bem como a distribuição das atividades em diferentes etapas do processo. </em></p>
+
+### Link's
+> [Google Drive](https://drive.google.com/drive/folders/1cLr-dzeDQ2KANPvFg3cpiZflkdX-FiEP?usp=sharing) <br>
+> [Trello](https://trello.com/invite/b/FFZFJuPi/ATTI5f4b90b57833bb40a9ef39d7ffd4e013175830B0/modulo-ii-projeto-avaliativo-devinhouse)
+
+<hr>
+<p align="right"> SESI SENAI - Florianópolis/SC</p>
