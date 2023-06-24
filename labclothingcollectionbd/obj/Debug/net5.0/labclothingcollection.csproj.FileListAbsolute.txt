@@ -61,3 +61,5 @@ G:\Meu Drive\DEVinHouse\LAB-Clothing-Collection-BackEnd\labclothingcollectionbd\
 G:\Meu Drive\DEVinHouse\LAB-Clothing-Collection-BackEnd\labclothingcollectionbd\obj\Debug\net5.0\ref\labclothingcollection.dll
 G:\Meu Drive\DEVinHouse\LAB-Clothing-Collection-BackEnd\labclothingcollectionbd\obj\Debug\net5.0\labclothingcollection.pdb
 G:\Meu Drive\DEVinHouse\LAB-Clothing-Collection-BackEnd\labclothingcollectionbd\obj\Debug\net5.0\labclothingcollection.genruntimeconfig.cache
+G:\Meu Drive\DEVinHouse\LAB-Clothing-Collection-BackEnd\labclothingcollectionbd\obj\Debug\net5.0\labclothingcollection.csproj.AssemblyReference.cache
+G:\Meu Drive\DEVinHouse\LAB-Clothing-Collection-BackEnd\labclothingcollectionbd\bin\Debug\net5.0\labclothingcollection.xml

@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>labclothingcollection</name>
+    </assembly>
+    <members>
+        <member name="M:labclothingcollectionbd.Controllers.ColecoesController.GetAll(System.String)">
+            <summary>Listagem de todas as coleções. </summary>
+            <param name="status">Filtro opcional por estado da coleção</param>
+            <returns>Resposta HTTP com a lista de coleções</returns>
+            <response code = "200"> Sucesso no retorno do objeto coleções cadastradas! </response>
+        </member>
+        <member name="M:labclothingcollectionbd.Controllers.ColecoesController.GetById(System.Int32)">
+            <summary>Consultar coleção por Id.</summary>
+            <param name="id">Id da coleção.</param>
+            <returns>Resposta HTTP com os dados da coleção</returns>
+            <response code="200"> Sucesso no retorno da coleção na Lista coleções!</response>
+            <response code="404"> Não foi encontrado registro com o Id informado. Id inválido! </response>
+        </member>
+        <member name="M:labclothingcollectionbd.Controllers.ColecoesController.Create(labclothingcollection.DTO.ColecoesDTO.Request.ColecoesRequestDTO)">
+            <summary>Cadastro de Coleções</summary>
+            <param name="colecao">Dados da coleção a ser cadastrada</param>
+            <returns>Resposta HTTP com o código e dados da nova coleção</returns>
+            <response code = "201"> Sucesso no post do objeto Coleções. </response>
+            <response code = "400"> Requisição com dados invalidos para o objeto Coleções! </response>
+            <response code = "409"> Coleção já cadastrada no objeto Coleções. </response>
+        </member>
+        <member name="M:labclothingcollectionbd.Controllers.ColecoesController.Update(System.Int32,labclothingcollection.DTO.ColecoesDTO.Request.ColecoesRequestDTO)">
+            <summary>Atualização dos dados de Coleções</summary>
+            <param name="id">ID da coleção.</param>
+            <param name="colecaoPatch">Operação de patch para atualizar os dados.</param>
+            <returns>HTTP com os dados atualizados da coleção</returns>
+            <response code = "200"> Sucesso na atualização da coleção no objeto Coleções. </response>
+            <response code = "400"> Requisição com dados inválidos! </response>
+            <response code = "404"> Não foi encontrado  registro com o Id informado. Id inválido! </response>
+        </member>
+        <member name="M:labclothingcollectionbd.Controllers.ColecoesController.UpdateEstadoSistema(System.Int32,labclothingcollection.DTO.ColecoesDTO.Request.EstadoSistemaColecaoRequestDTO)">
+            <summary>Atualização de estado de Coleções</summary>
+            <param name="id">Id da coleção.</param>
+            <param name="status">Novo estado da coleção</param>
+            <returns>Resposta HTTP com o estado atualizado da coleção</returns>
+        </member>
+        <member name="M:labclothingcollectionbd.Controllers.ColecoesController.Delete(System.Int32)">
+            <summary>Exclusão de coleção</summary>
+            <param name="id">Id da coleção a ser excluida</param>
+            <returns>Resposta HTTP indicando o resultado da exclusão</returns>
+            <reponse code="204">Coleção removida da lista Coleções</reponse>
+            <reponse code="404">Não foi encontrado  registro com o Id informado</reponse>
+        </member>
+        <member name="M:labclothingcollectionbd.Controllers.ModelosController.GetAll">
+            <summary>Consulta do objeto Modelos cadastrados.</summary>
+            <returns>Retorna o objeto Modelos, com os modelos cadastrados</returns>
+            <response code = "200"> Sucesso no retorno do objeto modelos cadastrados</response>
+        </member>
+        <!-- Badly formed XML comment ignored for member "M:labclothingcollectionbd.Controllers.ModelosController.GetById(System.Int32)" -->
+        <member name="M:labclothingcollectionbd.Controllers.ModelosController.Create(labclothingcollection.DTO.ModelosDTO.Request.ModelosRequestDTO)">
+            <summary>Cadastra um novo modelo  na lista Modelos</summary>
+            <param name = "modelo">Modelo</param>
+            <returns>Resposta HTTP com os dados da coleção</returns>
+            <response code = "201">Sucesso no post do objeto Modelos. </response>
+            <response code = "400">Requisição com dados invalidos para o objeto Modelos. </response>
+            <response code = "409">Modelo já cadastrado no objeto Modelos. </response>        
+        </member>
+        <member name="M:labclothingcollectionbd.Controllers.ModelosController.Update(System.Int32,labclothingcollection.DTO.ModelosDTO.Request.ModelosRequestDTO)">
+            <summary>Atualização de um  modelo no objeto Modelos</summary>
+            <param name = "id">Id do Modelo</param>
+            <param name = "modelo">Lista Modelos com as novas caracteristicas do modelo</param>
+            <returns>HTTP com os dados atualizados da coleção</returns>
+            <response code = "200">Sucesso na atualização do modelo no objeto Modelos</response>
+            <response code = "400">Requisição com dados inválidos</response>
+            <response code = "404">Não foi encontrado  registro com o Id informado</response>       
+        </member>
+        <member name="M:labclothingcollectionbd.Controllers.ModelosController.Delete(System.Int32)">
+            <summary>Remoção de um modelo na lista Modelos</summary>
+            <param name="id"> Id do Modelo</param>
+            <returns>Resposta HTTP indicando o resultado da exclusão</returns>
+            <reponse code="204"> Modelo removido da lista Modelos</reponse>
+            <reponse code="404"> Não foi encontrado  registro com o Id informado</reponse>
+        </member>
+        <member name="M:labclothingcollectionbd.Controllers.UsuariosController.GetAll(System.String)">
+            <summary> Lista de Usuarios cadastrados. </summary>
+            <returns> Retorna uma lista de Usuarios cadastrados. </returns>
+            <response code = "200"> Sucesso no retorno de uma Usuarios cadastrados! </response>
+        </member>
+        <member name="M:labclothingcollectionbd.Controllers.UsuariosController.GetUsuario(System.Int32)">
+            <summary> Consulta de Usuarios pelo seu código identificador, na lista de Usuarios. </summary>
+            <param name = "id"> Id de usuario cadastrado. </param>
+            <returns> Retorno de uma lista de Usuarios cadastrados. </returns>
+            <response code = "200"> Sucesso no retorno de lista de usuarios. </response>
+            <response code = "404"> Não foi encontrado registro com o Id informado. Id inválido! </response>
+        </member>
+        <member name="M:labclothingcollectionbd.Controllers.UsuariosController.CreateUsuario(labclothingcollection.DTO.UsuariosDTO.Request.UsuariosRequestDTO)">
+            <summary> Cadastrando um novo usuario na lista Usuarios. </summary>
+            <param name = "pessoa"> Lista usuario. </param>
+            <returns> Retorno da Lista Usuarios cadastradas. </returns>
+            <response code = "201"> Sucesso no post do usuario na lista Usuarios. </response>
+            <response code = "400"> Requisição com dados inválidos. </response>
+            <response code = "409"> Usuario já cadastrado na lista Usuarios. </response>
+        </member>
+        <member name="M:labclothingcollectionbd.Controllers.UsuariosController.Update(System.Int32,labclothingcollection.DTO.UsuariosDTO.Request.UsuariosRequestDTO)">
+            <summary> Atualização dos dados de determinado usuario na lista de Usuarios. </summary>
+            <param name = "id"> Id do usuario. </param>
+            <param name = "pessoa"> Lista com as novos dados de usuario. </param>
+            <returns> Retorno do objeto usuario atualizado. </returns>
+            <response code = "200"> Sucesso na atualização de usuario na lista Usuarios. </response>
+            <response code = "400"> Requisição com dados inválidos. </response>
+            <response code = "404"> Não foi encontrado  registro com o Id informado. Id inválido! </response>
+        </member>
+        <member name="M:labclothingcollectionbd.Controllers.UsuariosController.UpdateEstadoUsuario(System.Int32,labclothingcollection.DTO.UsuariosDTO.Request.EstadoUsuarioRequestDTO)">
+            <summary>Atualização de estado de Usuarios</summary>
+            <param name="id">Id do usuario</param>
+            <param name="statusDto">Resposta HTTP com o estado atualizado do usuario</param>
+            <returns></returns>
+        </member>
+        <member name="M:labclothingcollectionbd.Controllers.UsuariosController.Delete(System.Int32)">
+            <summary> Remoção de uma usuario. </summary>
+            <param name = "id"> Id de usuario. </param>
+            <returns> Remoção de um usuario da lista Usuarios </returns>
+            <reponse code = "204"> Usuario removido com sucesso! </reponse>
+            <reponse code = "404"> Não foi encontrado  registro com o Id informado. Id inválido! </reponse>
+        </member>
+        <member name="M:labclothingcollection.Controllers.PessoasController.GetAll">
+            <summary> Lista de pessoas cadastradas. </summary>
+            <returns> Retorna uma lista de pessoas cadastradas. </returns>
+            <response code = "200"> Sucesso no retorno do objeto lista de pessoas cadastradas! </response>
+        </member>
+        <member name="M:labclothingcollection.Controllers.PessoasController.GetById(System.Int32)">
+            <summary> Consulta de pessoas pelo seu código identificador, no objeto lista usuarios. </summary>
+            <param name = "id"> Id de pessoa cadastrada. </param>
+            <returns> Retorno do objeto pessoas cadastradas. </returns>
+            <response code = "200"> Sucesso no retorno do objeto pessoas. </response>
+            <response code = "404"> Não foi encontrado registro com o Id informado. Id inválido! </response>
+        </member>
+    </members>
+</doc>
