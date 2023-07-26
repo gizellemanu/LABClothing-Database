@@ -1,5 +1,4 @@
 # LAB-Clothing-Collection-BackEnd
-<p align="right">DEVinHouse [Audaces] V2 . Módulo 2 - Projeto Avaliativo</p>
 <p align="right"> Gizelle Emanuel da Silva</p>
 
 ## INTRODUÇÃO
@@ -91,9 +90,6 @@
 ### Modelagem
 <img aling="center" src="./modelagem.jpg" /> 
 
-
-
-
 ## Orientações 
 ### Execução da API rest
 <p align="justify">Para começar, certifique-se de ter instalado o SQL Server Express em sua máquina. Em seguida, realize a instalação do Visual Studio 2019 ou uma versão mais recente. Essa etapa é essencial para prosseguir com o processo.</p>
@@ -108,14 +104,5 @@
 
 <p align="justify">Por fim, no Visual Studio, pressione F5 ou vá para "Debug" > "Start Debugging" (Depurar > Iniciar Depuração) para iniciar o projeto. Isso irá compilar e executar o projeto, permitindo que você comece a trabalhar nele. Lembre-se de que é necessário ter o Visual Studio 2019 ou uma versão mais recente para seguir essas etapas com sucesso.</p>
 
-### Recursos Visuais
-<p align="justify"><em> Gostaria de informar que temos recursos adicionais para auxiliá-lo no processo. Primeiramente, um vídeo explicativo sobre a modelagem da API rest está disponível no Google Drive. Ele fornece informações detalhadas sobre a estrutura e o funcionamento do modelo da API rest e banco de daos SQL Server. Além disso, temos um vídeo que mostra os endpoints utilizados no projeto. Esse vídeo é útil para compreender e explorar as funcionalidades disponíveis na aplicação.</em></p>
-
-<p align="justify"><em> Para facilitar o gerenciamento e a organização do projeto, foi adotada a técnica do Kanban no quadro Trello. Essa metodologia ágil permite visualizar e acompanhar o progresso das tarefas, bem como a distribuição das atividades em diferentes etapas do processo. </em></p>
-
-### Link's
-> [Google Drive](https://drive.google.com/drive/folders/1cLr-dzeDQ2KANPvFg3cpiZflkdX-FiEP?usp=sharing) <br>
-> [Trello](https://trello.com/invite/b/FFZFJuPi/ATTI5f4b90b57833bb40a9ef39d7ffd4e013175830B0/modulo-ii-projeto-avaliativo-devinhouse)
-
 <hr>
-<p align="right"> SESI SENAI - Florianópolis/SC</p>
+<p align="right"> Back End Engineer</p>
