@@ -7,7 +7,7 @@
 
 #### Completion Certificate
 _This project was developed during the [DEVinHouse | Audaces](https://devinhouse.tech/) course, taught by [SENAI](https://cursos.sesisenai.org.br/curso/devinhouse/525)._<br>
-You can access the certificate directly [→ here ←](path/to/the/certificate.pdf).
+You can access the certificate directly [→ here ←](https://github.com/gizellemanu/LABClothing-Database/blob/main/Certificado.pdf).
 
 ## _Table of Contents_
 - [_System Format_](#system-format)
@@ -232,7 +232,7 @@ Gizelle Emanuela da Silva
 
 #### Certificado de Conclusão
 _Este projeto foi desenvolvido durante o curso [DEVinHouse | Audaces](https://devinhouse.tech/), ministrado por [SENAI](https://cursos.sesisenai.org.br/curso/devinhouse/525)._<br>
-Você pode acessar o certificado diretamente [→ aqui ←](caminho/para/o/certificado.pdf). 
+Você pode acessar o certificado diretamente [→ aqui ←](https://github.com/gizellemanu/LABClothing-Database/blob/main/Certificado.pdf). 
 
 ## _Índice_
 - [_Formato do Sistema_](#formato-do-sistema)
